@@ -1,0 +1,55 @@
+<launch>
+
+	<!-- UAV settings -->
+	<arg name="uav1_id" default="1"/>
+	<arg name="uav1_init_x" default="0.0"/>
+    <arg name="uav1_init_y" default="0.0"/>
+	<arg name="Takeoff_height" default="1.0"/>
+	
+
+    <!-- launch UAV1 -->
+	<include file="$(find warehouse)/launch/sitl_whdrone_basic.launch">
+		<arg name="uav_id" value="$(arg uav1_id)"/>
+		<arg name="sdf" value="$(find prometheus_gazebo)/amov_models/Multisolo/uav1/uav1.sdf"/>
+		<arg name="model" value="uav1"/>
+		<arg name="uav_init_x" value="$(arg uav1_init_x)"/>
+		<arg name="uav_init_y" value="$(arg uav1_init_y)"/>
+		<arg name="uav_init_z" value="0.15"/>
+		<arg name="uav_init_yaw" value="0.0"/>
+	</include>
+
+	<!-- run the swarm_estimator.cpp -->
+	<node pkg="warehouse" type="estimator" name="estimator_uav1" output="screen">
+		<param name="uav_id" value="$(arg uav1_id)"/>
+	</node>
+
+	<!-- Start swarm_controller -->
+	<node pkg="warehouse" type="hover_test" name="hover_test_uav1" output="screen">
+		<param name="uav_id" value="$(arg uav1_id)"/>
+		<param name="Takeoff_height" value="$(arg Takeoff_height)"/>
+	</node>
+
+	<!-- Start terminal control, will open a new terminal -->
+	<node pkg="warehouse" type="terminal_control" name="terminal_control" output="screen" launch-prefix="gnome-terminal --">
+		<param name="uav_id" value="$(arg uav1_id)"/>
+	</node>
+
+	<!-- 启动Gazebo -->
+	<!-- Gazebo configs -->
+    <arg name="gui" default="true"/>
+    <arg name="debug" default="false"/>
+    <arg name="verbose" default="false"/>
+    <arg name="paused" default="false"/>
+    <arg name="respawn_gazebo" default="false"/>
+	<arg name="world" default="$(find prometheus_gazebo)/worlds/prometheus_logo.world"/>
+    <!-- Gazebo sim -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="gui" value="$(arg gui)"/>
+        <arg name="debug" value="$(arg debug)"/>
+        <arg name="verbose" value="$(arg verbose)"/>
+        <arg name="paused" value="$(arg paused)"/>
+        <arg name="respawn_gazebo" value="$(arg respawn_gazebo)"/>
+        <arg name="world_name" value="$(arg world)"/>
+    </include>
+</launch>
+

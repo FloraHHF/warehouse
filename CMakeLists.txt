@@ -82,9 +82,20 @@ include_directories(
   ../ego_planner/ego-planner-swarm/src/uav_simulator/Utils/uav_utils/include  
 )
 
+
+#############
+## Install ##
+#############
+
 add_executable(hover_test src/hover_test.cpp)
-# add_dependencies(hover_test hover_test_gencpp)
+# add_dependencies(hover_test hover_test_gencpp) # I don't understand why this not working
 target_link_libraries(hover_test ${catkin_LIBRARIES})
+
+add_executable(estimator src/estimator.cpp)
+target_link_libraries(estimator ${catkin_LIBRARIES})
+
+add_executable(terminal_control src/terminal_control.cpp)
+target_link_libraries(terminal_control ${catkin_LIBRARIES})
 
 #############
 ## Install ##
